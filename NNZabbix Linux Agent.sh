@@ -48,9 +48,7 @@ fi
 function ubuntu20()
 {
 sudo ufw enable -y
-sudo ufw allow ssh
-sudo ufw allow 10050
-sudo ufw allow 10051
+sudo ufw allow ssh && sudo ufw allow 10050 && sudo ufw allow 10051
 wget https://repo.zabbix.com/zabbix/6.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_6.0-1+ubuntu20.04_all.deb
 sudo dpkg -i zabbix-release_6.0-1+ubuntu20.04_all.deb
 sudo apt-get upgrade  && sudo apt-get update
