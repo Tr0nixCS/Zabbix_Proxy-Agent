@@ -53,7 +53,7 @@ sudo ufw allow 10050
 sudo ufw allow 10051
 wget https://repo.zabbix.com/zabbix/6.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_6.0-1+ubuntu20.04_all.deb
 sudo dpkg -i zabbix-release_6.0-1+ubuntu20.04_all.deb
-sudo apt update
+sudo apt-get upgrade  && sudo apt-get update
 sudo apt install zabbix-agent -y
 systemctl enable zabbix-agent
 systemctl restart zabbix-agent
