@@ -18,7 +18,7 @@ echo Step 3 = Downloading Zabbix Repository and Installing Zabbix-Agent
 echo !! 3 !! Zabbix-Agent Installed
 echo ========================================================================
 
-sed -i "s+Server=127.0.0.1+Server=10.45.15.100+g" /etc/zabbix/zabbix_agentd.conf
+sed -i "s+Server=127.0.0.1+Server=CHANGE_THIS_TO_THE_IP_OF_THE_PROXY+g" /etc/zabbix/zabbix_agentd.conf
 sed -i "s+Hostname=Zabbix server+Hostname=$(hostname -f)+g" /etc/zabbix/zabbix_agentd.conf
 sed -i "s+# Timeout=3+Timeout=30+g" /etc/zabbix/zabbix_agentd.conf
 sed -i "s+# TLSAccept=unencrypted+TLSAccept=cert+g" /etc/zabbix/zabbix_agentd.conf
@@ -48,11 +48,12 @@ fi
 function ubuntu20()
 {
 sudo ufw enable -y
-sudo ufw allow ssh && sudo ufw allow 10050 && sudo ufw allow 10051
+sudo ufw allow ssh && sudo ufw allow 10050 && sudo ufw allow 10051 && sudo ufw allow 443 && sudo ufw allow 5432 && sudo ufw allow Apache Full
 wget https://repo.zabbix.com/zabbix/6.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_6.0-1+ubuntu20.04_all.deb
 sudo dpkg -i zabbix-release_6.0-1+ubuntu20.04_all.deb
 sudo apt-get upgrade  && sudo apt-get update
 sudo apt install zabbix-agent -y
+sudo apt-get install postgresql-13 -y 
 systemctl enable zabbix-agent
 systemctl restart zabbix-agent
 ifexitiszero
