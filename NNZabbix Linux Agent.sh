@@ -1,7 +1,5 @@
 #!/bin/bash
 
-#Created by @MakMahlawat
-
 #Changed by @Tr0nixCS 
 
 # Step 1 = Determines the OS Distribution
@@ -18,12 +16,20 @@ echo Step 3 = Downloading Zabbix Repository and Installing Zabbix-Agent
 echo !! 3 !! Zabbix-Agent Installed
 echo ========================================================================
 
-sed -i "s+Server=127.0.0.1+Server=CHANGE_THIS_TO_THE_IP_OF_THE_PROXY+g" /etc/zabbix/zabbix_agentd.conf
-sed -i "s+Hostname=Zabbix server+Hostname=$(hostname -f)+g" /etc/zabbix/zabbix_agentd.conf
+sed -i "s+Server=127.0.0.1+Server=127.0.0.1+g" /etc/zabbix/zabbix_agentd.conf
+sed -i "s+Hostname=Kundens Navn_Proxy+Hostname=$(hostname -f)+g" /etc/zabbix/zabbix_agentd.conf
 sed -i "s+# Timeout=3+Timeout=30+g" /etc/zabbix/zabbix_agentd.conf
 sed -i "s+# TLSAccept=unencrypted+TLSAccept=cert+g" /etc/zabbix/zabbix_agentd.conf
 sed -i "s+# TLSCAFile=+TLSCAFile=/etc/zabbix/cabundle.crt+g" /etc/zabbix/zabbix_agentd.conf
 
+sed -i "s+DBHost=localhost+g" /etc/zabbix/zabbix_proxy.conf
+sed -i "s+DBName=zabbix+g" /etc/zabbix/zabbix_proxy.conf
+sed -i "s+DBUser=zabbix+g" /etc/zabbix/zabbix_proxy.conf
+sed -i "s+DBPassword=CHANGE THE PASSWORD ON THE DB AND PUT IT HERE+g" /etc/zabbix/zabbix_proxy.conf
+
+
+systemctl restart zabbix-proxy
+systemctl enable zabbix-proxy
 
 echo ========================================================================
 echo Step 4 = Working on Zabbix-Agent Configuration
@@ -53,7 +59,10 @@ wget https://repo.zabbix.com/zabbix/6.0/ubuntu/pool/main/z/zabbix-release/zabbix
 sudo dpkg -i zabbix-release_6.0-1+ubuntu20.04_all.deb
 sudo apt-get upgrade  && sudo apt-get update
 sudo apt install zabbix-agent -y
-sudo apt-get install postgresql-13 -y 
+cat /usr/share/doc/zabbix-sql-scripts/postgresql/proxy.sql | sudo -u zabbix psql zabbix
+sudo apt-get install postgresql-13 -y
+sudo apt install zabbix-proxy-pgsql zabbix-sql-scripts -y
+
 systemctl enable zabbix-agent
 systemctl restart zabbix-agent
 ifexitiszero
