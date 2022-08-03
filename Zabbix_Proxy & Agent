@@ -16,21 +16,18 @@ echo Step 3 = Downloading Zabbix Repository and Installing Zabbix-Agent
 echo !! 3 !! Zabbix-Agent Installed
 echo ========================================================================
 
-sed -i "s+Server=127.0.0.1+Server=127.0.0.1+g" /etc/zabbix/zabbix_agentd.conf
-sed -i "s+Hostname=Kundens Navn_Proxy+Hostname=$(hostname -f)+g" /etc/zabbix/zabbix_agentd.conf
-sed -i "s+# Timeout=3+Timeout=30+g" /etc/zabbix/zabbix_agentd.conf
-sed -i "s+# TLSAccept=unencrypted+TLSAccept=cert+g" /etc/zabbix/zabbix_agentd.conf
-sed -i "s+# TLSCAFile=+TLSCAFile=/etc/zabbix/cabundle.crt+g" /etc/zabbix/zabbix_agentd.conf
+sudo sed -i "s+Server=127.0.0.1+Server=127.0.0.1+g" /etc/zabbix/zabbix_agentd.conf
+sudo sed -i "s+Hostname=Kundens Navn_Proxy+Hostname=$(hostname -f)+g" /etc/zabbix/zabbix_agentd.conf
+sudo sed -i "s+# Timeout=3+Timeout=30+g" /etc/zabbix/zabbix_agentd.conf
+sudo sed -i "s+# TLSAccept=unencrypted+TLSAccept=cert+g" /etc/zabbix/zabbix_agentd.conf
+sudo sed -i "s+# TLSCAFile=+TLSCAFile=/etc/zabbix/cabundle.crt+g" /etc/zabbix/zabbix_agentd.conf
 
-sed -i "s+Server=xxx+Server=xxx+g" /etc/zabbix/zabbix_proxy.conf
-sed -i "s+DBHost=localhost+g" /etc/zabbix/zabbix_proxy.conf
-sed -i "s+DBName=zabbix+g" /etc/zabbix/zabbix_proxy.conf
-sed -i "s+DBUser=zabbix+g" /etc/zabbix/zabbix_proxy.conf
-sed -i "s+DBPassword=CHANGE THE PASSWORD ON THE DB AND PUT IT HERE+g" /etc/zabbix/zabbix_proxy.conf
-
-
-systemctl restart zabbix-proxy
-systemctl enable zabbix-proxy
+sudo sed -i "s+Server=185.223.24.10+Server=185.223.24.10+g" /etc/zabbix/zabbix_proxy.conf
+sudo sed -i "s+DBName=zabbix+DBName=zabbix+g" /etc/zabbix/zabbix_proxy.conf
+sudo sed -i "s+DBUser=zabbix+DBUser=zabbix+g" /etc/zabbix/zabbix_proxy.conf
+sudo sed -i "s+DBPassword=CHANGE_PW+DBPassword=CHANGE_PW+g" /etc/zabbix/zabbix_proxy.conf
+sudo sed -i "s+# TLSAccept=unencrypted+TLSAccept=cert+g" /etc/zabbix/zabbix_agentd.conf
+sudo sed -i "s+# TLSCAFile=+TLSCAFile=/etc/zabbix/cabundle.crt+g" /etc/zabbix/zabbix_agentd.conf
 
 echo ========================================================================
 echo Step 4 = Working on Zabbix-Agent Configuration
@@ -58,23 +55,30 @@ function ubuntu20()
 sudo usermod -aG sudo zabbix_proxy
 sudo ufw enable -y
 sudo ufw allow ssh && sudo ufw allow 10050 && sudo ufw allow 10051 && sudo ufw allow 443 && sudo ufw allow 5432 && sudo ufw allow Apache Full
-wget https://repo.zabbix.com/zabbix/6.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_6.0-1+ubuntu20.04_all.deb
-sudo dpkg -i zabbix-release_6.0-1+ubuntu20.04_all.deb
-sudo apt-get update  && sudo apt-get upgrade
-sudo apt install zabbix-agent -y
-cat /usr/share/doc/zabbix-sql-scripts/postgresql/proxy.sql | sudo -u zabbix psql zabbix
-sudo apt-get install postgresql-13 -y
+sudo wget https://repo.zabbix.com/zabbix/6.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_6.0-3+ubuntu20.04_all.deb
+sudo dpkg -i zabbix-release_6.0-3+ubuntu20.04_all.deb
+sudo apt-get update  && sudo apt-get upgrade -y
+sudo apt install zabbix-server-pgsql zabbix-sql-scripts zabbix-agent -y
+
+sudo apt update
+sudo apt install curl gpg gnupg2 software-properties-common apt-transport-https lsb-release ca-certificates -y 
+curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc|sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg
+echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" |sudo tee  /etc/apt/sources.list.d/pgdg.list
+sudo apt install postgresql-13 postgresql-client-13 -y
+
 sudo apt install zabbix-proxy-pgsql zabbix-sql-scripts -y
+
 
 sudo systemctl enable zabbix-agent
 sudo systemctl restart zabbix-agent
+sudo systemctl enable zabbix-proxy
+sudo systemctl restart zabbix-proxy
+
 sudo systemctl enable postgresql.service
 
-psql CREATE ROLE zabbix_proxy WITH SUPERUSER CREATEDB CREATEROLE LOGIN ENCRYPTED PASSWORD 'xxx'
-CREATE DATABASE zabbix_proxy
-GRANT ALL PRIVILEGES ON DATABASE zabbix_proxy TO zabbix_proxy;
-exit
-
+sudo -u postgres createuser --pwprompt zabbix_proxy
+#Enter Password here
+sudo -u postgres createdb -O zabbix_proxy zabbix_proxy
 cat /usr/share/doc/zabbix-sql-scripts/postgresql/proxy.sql | sudo -u zabbix_proxy psql zabbix_proxy
 
 
@@ -114,6 +118,7 @@ if [[ $(cat /etc/*release*) == *"ubuntu"* ]];
         version_id_ubuntu
 else echo :-/ Failed at Step 1 : We"'"re Sorry. This script cannot be used for zabbix-agent installation on this machine && exit 0
 fi
+
 
 
 #STEP 5
