@@ -23,8 +23,8 @@ sudo sed -i "s+# TLSAccept=unencrypted+TLSAccept=cert+g" /etc/zabbix/zabbix_agen
 sudo sed -i "s+# TLSCAFile=+TLSCAFile=/etc/zabbix/cabundle.crt+g" /etc/zabbix/zabbix_agentd.conf
 
 sudo sed -i "s+Server=185.223.24.10+Server=185.223.24.10+g" /etc/zabbix/zabbix_proxy.conf
-sudo sed -i "s+DBName=zabbix+DBName=zabbix+g" /etc/zabbix/zabbix_proxy.conf
-sudo sed -i "s+DBUser=zabbix+DBUser=zabbix+g" /etc/zabbix/zabbix_proxy.conf
+sudo sed -i "s+DBName=zabbix_proxy+DBName=zabbix_proxy+g" /etc/zabbix/zabbix_proxy.conf
+sudo sed -i "s+DBUser=zabbix_proxy+DBUser=zabbix_proxy+g" /etc/zabbix/zabbix_proxy.conf
 sudo sed -i "s+DBPassword=CHANGE_PW+DBPassword=CHANGE_PW+g" /etc/zabbix/zabbix_proxy.conf
 sudo sed -i "s+# TLSAccept=unencrypted+TLSAccept=cert+g" /etc/zabbix/zabbix_agentd.conf
 sudo sed -i "s+# TLSCAFile=+TLSCAFile=/etc/zabbix/cabundle.crt+g" /etc/zabbix/zabbix_agentd.conf
