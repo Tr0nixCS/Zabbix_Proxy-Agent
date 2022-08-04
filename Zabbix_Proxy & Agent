@@ -17,7 +17,7 @@ echo !! 3 !! Zabbix-Agent Installed
 echo ========================================================================
 
 sudo sed -i "s+Server=127.0.0.1+Server=127.0.0.1+g" /etc/zabbix/zabbix_agentd.conf
-sudo sed -i "s+Hostname=Kundens Navn_Proxy+Hostname=$(hostname -f)+g" /etc/zabbix/zabbix_agentd.conf
+sudo sed -i "s+Hostname=Kundens_Navn_Proxy+Hostname=Kundens_Navn_Proxy $(hostname -f)+g" /etc/zabbix/zabbix_agentd.conf
 sudo sed -i "s+# Timeout=3+Timeout=30+g" /etc/zabbix/zabbix_agentd.conf
 sudo sed -i "s+# TLSAccept=unencrypted+TLSAccept=cert+g" /etc/zabbix/zabbix_agentd.conf
 sudo sed -i "s+# TLSCAFile=+TLSCAFile=/etc/zabbix/cabundle.crt+g" /etc/zabbix/zabbix_agentd.conf
@@ -60,7 +60,7 @@ sudo dpkg -i zabbix-release_6.0-3+ubuntu20.04_all.deb
 sudo apt-get update  && sudo apt-get upgrade -y
 sudo apt install zabbix-server-pgsql zabbix-sql-scripts zabbix-agent -y
 
-sudo apt update
+sudo apt-get update  && sudo apt-get upgrade -y
 sudo apt install curl gpg gnupg2 software-properties-common apt-transport-https lsb-release ca-certificates -y 
 curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc|sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg
 echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" |sudo tee  /etc/apt/sources.list.d/pgdg.list
@@ -68,7 +68,7 @@ sudo apt install postgresql-13 postgresql-client-13 -y
 
 sudo apt install zabbix-proxy-pgsql zabbix-sql-scripts -y
 
-
+sudo apt-get update  && sudo apt-get upgrade -y
 sudo systemctl enable zabbix-agent
 sudo systemctl restart zabbix-agent
 sudo systemctl enable zabbix-proxy
